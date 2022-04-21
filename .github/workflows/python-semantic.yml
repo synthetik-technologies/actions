@@ -24,4 +24,7 @@ jobs:
           semantic-release --prerelease version
           vers=$(semantic-release --current print-version)
           echo $vers
-      - run: git push
+      - name: Push branches and tags
+        run: |
+          git push
+          git push --tags
