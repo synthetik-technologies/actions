@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: version
-          path: version.txt
+          path: module-version.txt
 
 
   docker-build:
@@ -57,7 +57,7 @@ jobs:
         with:
           name: version
       - name: Get version number
-        run: vers=$(cat version.txt)
+        run: vers=$(cat module-version.txt)
       - uses: actions/checkout@v3
         with:
           ref: $vers
