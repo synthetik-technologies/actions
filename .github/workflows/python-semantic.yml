@@ -24,3 +24,5 @@ jobs:
           semantic-release --prerelease version
           vers=$(semantic-release --current print-version)
           echo $vers
+      - uses: actions/checkout@v3
+      - run: git push
