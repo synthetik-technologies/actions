@@ -59,9 +59,6 @@ jobs:
       - name: Get version number
         run: vers=$(cat module-version.txt)
       - uses: actions/checkout@v3
-        with:
-          ref: $vers
-      - uses: actions/checkout@v2
       - name: Build the Docker image
         run: docker login --username synthetikDev --password ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }} synthetikdev.azurecr.io
       - run: docker login --username synthetik --password ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }} synthetik.azurecr.io
