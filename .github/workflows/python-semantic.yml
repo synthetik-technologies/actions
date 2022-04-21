@@ -45,7 +45,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: version.txt
+          name: version
           path: version.txt
 
 
@@ -55,8 +55,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: version.txt
-          path: ./
+          name: version
       - name: Get version number
         run: vers=$(cat version.txt)
       - uses: actions/checkout@v3
