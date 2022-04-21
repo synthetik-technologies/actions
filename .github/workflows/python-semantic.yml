@@ -46,6 +46,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: version.txt
+          path: version.txt
 
 
   docker-build:
