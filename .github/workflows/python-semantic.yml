@@ -22,5 +22,5 @@ jobs:
       - run: |
           pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
           semantic-release --prerelease version
-          vers=$(semantic-release print-version)
+          vers=$(semantic-release --prerelease print-version)
           echo $vers
