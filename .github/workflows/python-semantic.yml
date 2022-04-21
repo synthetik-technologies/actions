@@ -22,7 +22,7 @@ jobs:
           cache: pip
       - name: Log into git
         run: |
-          git config --global user.name "${{input.username}}"
+          git config --global user.name "${{inputs.username}}"
       - name: Install python-semantic-release
         run: pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
       - name: Run semantic release
