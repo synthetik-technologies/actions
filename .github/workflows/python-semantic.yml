@@ -17,3 +17,4 @@ jobs:
           pip install python-semantic-release
           semantic-release --prerelease version
           vers=$(semantic-release print-version)
+          echo $vers
