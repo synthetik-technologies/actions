@@ -46,9 +46,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: version.txt
-          path: version.txt
-          mime-type: text/plain
-          cache: false
 
 
   docker-build:
@@ -58,9 +55,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: version.txt
-          path: version.txt
-          mime-type: text/plain
-          cache: false
       - name: Get version number
         run: vers=$(cat version.txt)
       - uses: actions/checkout@v3
