@@ -56,6 +56,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: version.txt
+          path: ./
       - name: Get version number
         run: vers=$(cat version.txt)
       - uses: actions/checkout@v3
