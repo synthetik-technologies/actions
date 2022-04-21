@@ -19,8 +19,10 @@ jobs:
         run: |
           git config --global user.name jdh313
           git config --global user.email hoehler@synthetik-technologies.com
-      - run: |
-          pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
+      - name: Install python-semantic-release
+        run: pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
+      - name: Run semantic release
+        run: |
           semantic-release --prerelease version
           vers=$(semantic-release --current print-version)
           echo $vers
