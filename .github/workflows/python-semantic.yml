@@ -6,6 +6,14 @@ on:
       username:
         required: true
         type: string
+      image-name:
+        required: true
+        type: string
+    secrets:
+      DEV_CONTAINER_REGISTRY_PASSWORD:
+        required: true
+      PROD_CONTAINER_REGISTRY_PASSWORD:
+        required: true
 
 jobs:
 
@@ -43,12 +51,25 @@ jobs:
           cache: false
 
 
-  # docker-build:
-  #   needs: [sem-ver]
-  #   runs-on: self-hosted
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: actions/
-    
+  docker-build:
+    needs: [sem-ver]
+    runs-on: self-hosted
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: version.txt
+          path: version.txt
+          mime-type: text/plain
+          cache: false
+      - name: Get version number
+        run: vers=$(cat version.txt)
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{vers}}
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker login --username synthetikDev --password ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }} synthetikdev.azurecr.io
+      - run: docker login --username synthetik --password ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }} synthetik.azurecr.io
+      - run: docker build . --file Dockerfile --tag synthetikdev.azurecr.io/${{inputs.image-name}}:${{ vers }}
+      - run: docker push synthetikdev.azurecr.io/${{inputs.image-name}}:${{ vers }}
+        
