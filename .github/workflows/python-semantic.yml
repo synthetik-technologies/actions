@@ -37,7 +37,7 @@ jobs:
         run: |
           semantic-release --prerelease version
           vers=$(semantic-release --current print-version)
-          echo $vers > version.txt
+          echo $vers > module-version.txt
       - name: Push branches and tags
         run: |
           git push
