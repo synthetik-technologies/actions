@@ -58,6 +58,7 @@ jobs:
           name: version
       - name: Get version number
         run: vers=$(cat module-version.txt)
+      - run: echo $vers
       - uses: actions/checkout@v3
       - name: Build the Docker image
         run: docker login --username synthetikDev --password ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }} synthetikdev.azurecr.io
