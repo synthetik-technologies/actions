@@ -1,6 +1,11 @@
 name: Docker Image CI
 
-on: workflow_call
+on: 
+  workflow_call:
+    inputs:
+      username:
+        required: true
+        type: string
 
 jobs:
 
@@ -17,8 +22,7 @@ jobs:
           cache: pip
       - name: Log into git
         run: |
-          git config --global user.name jdh313
-          git config --global user.email hoehler@synthetik-technologies.com
+          git config --global user.name "${{input.username}}"
       - name: Install python-semantic-release
         run: pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
       - name: Run semantic release
