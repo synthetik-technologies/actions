@@ -13,6 +13,10 @@ jobs:
           python-version: "3.10"
           architecture: "x64"
           cache: pip
+      - name: Log into git
+        run: |
+          git config --global user.name jdh313
+          git config --global user.email hoehler@synthetik-technologies.com
       - run: |
           pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
           semantic-release --prerelease version
