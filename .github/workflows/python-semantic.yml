@@ -29,8 +29,26 @@ jobs:
         run: |
           semantic-release --prerelease version
           vers=$(semantic-release --current print-version)
-          echo $vers
+          echo $vers > version.txt
       - name: Push branches and tags
         run: |
           git push
           git push --tags
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: version.txt
+          path: version.txt
+          mime-type: text/plain
+          cache: false
+
+
+  # docker-build:
+  #   needs: [sem-ver]
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: actions/
+    
