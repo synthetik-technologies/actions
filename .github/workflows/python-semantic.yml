@@ -1,0 +1,19 @@
+name: Docker Image CI
+
+on: pull_request
+
+jobs:
+
+  sem-ver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+          cache: pip
+      - run: |
+          pip install python-semantic-release
+          semantic-release --prerelease version
+          vers=$(semantic-release print-version)
