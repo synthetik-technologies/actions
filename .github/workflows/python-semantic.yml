@@ -83,5 +83,5 @@ jobs:
         run: docker login --username synthetikDev --password ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }} synthetikdev.azurecr.io
       - run: docker login --username synthetik --password ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }} synthetik.azurecr.io
       - run: docker build . --file Dockerfile --tag $IMAGE
-      - run: docker push synthetikdev.azurecr.io/${{inputs.image-name}}:$IMAGE
+      - run: docker push $IMAGE
         
