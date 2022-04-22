@@ -57,12 +57,14 @@ jobs:
         with:
           name: version
       - name: Get version number
-        run: vers=$(cat module-version.txt)
+        run: |
+          vers=$(cat module-version.txt)
+          echo "VERSION=$vers" >> $GITHUB_ENV
       - run: cat module-version.txt
       - uses: actions/checkout@v3
       - name: Build the Docker image
         run: docker login --username synthetikDev --password ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }} synthetikdev.azurecr.io
       - run: docker login --username synthetik --password ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }} synthetik.azurecr.io
-      - run: docker build . --file Dockerfile --tag synthetikdev.azurecr.io/${{inputs.image-name}}:$vers
-      - run: docker push synthetikdev.azurecr.io/${{inputs.image-name}}:$vers
+      - run: docker build . --file Dockerfile --tag synthetikdev.azurecr.io/${{inputs.image-name}}:$VERSION
+      - run: docker push synthetikdev.azurecr.io/${{inputs.image-name}}:$VERSION
         
