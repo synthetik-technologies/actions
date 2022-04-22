@@ -38,7 +38,7 @@ jobs:
         run: pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
       - name: Run semantic release
         run: |
-          if [${{inputs.is-release}} = true]
+          if [ ${{inputs.is-release}} == true ]
           then 
             semantic-release version
           else
@@ -68,7 +68,7 @@ jobs:
         run: |
           vers=$(cat module-version.txt)
           echo ${{inputs.is-release}}
-          if [${{inputs.is-release}} = true]
+          if [ ${{inputs.is-release}} == true ]
           then
             registry=synthetik.azurecr.io
           else
