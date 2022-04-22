@@ -9,6 +9,9 @@ on:
       image-name:
         required: true
         type: string
+      is-release:
+        required: true
+        type: boolean
     secrets:
       DEV_CONTAINER_REGISTRY_PASSWORD:
         required: true
@@ -35,7 +38,12 @@ jobs:
         run: pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
       - name: Run semantic release
         run: |
-          semantic-release --prerelease version
+          if [${{inputs.is-release}}]
+          then 
+            semantic-release version
+          else
+            semantic-release --prerelease version
+          fi
           vers=$(semantic-release --current print-version)
           echo $vers > module-version.txt
       - name: Push branches and tags
@@ -56,10 +64,17 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: version
-      - name: Get version number
+      - name: Get docker image
         run: |
           vers=$(cat module-version.txt)
-          image=synthetikdev.azurecr.io/${{inputs.image-name}}:$vers
+          if [${{inputs.is-release}}]
+          then
+            registry=synthetik.azurecr.io
+          else
+            registry=synthetikdev.azurecr.io
+          fi
+          image=$registry/${{inputs.image-name}}:$vers
+          
           echo "VERSION=$vers" >> $GITHUB_ENV
           echo "IMAGE=$image" >> $GITHUB_ENV
       - run: cat module-version.txt
