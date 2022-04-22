@@ -67,6 +67,7 @@ jobs:
       - name: Get docker image
         run: |
           vers=$(cat module-version.txt)
+          echo ${{inputs.is-release}}
           if [${{inputs.is-release}} = true]
           then
             registry=synthetik.azurecr.io
