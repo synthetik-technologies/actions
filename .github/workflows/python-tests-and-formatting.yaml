@@ -1,0 +1,74 @@
+name: Python Tests and Formatting
+
+on: 
+  workflow_call:
+    inputs:
+      username:
+        required: true
+        type: string
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Authenticate for Courier Dependency
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+          cache: pip
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "test.py"
+          allow_failure: false
+      - run: pip install pytest pytest-cov
+        if: steps.check_files.outputs.files_exists=='true'
+      - run: pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+        if: steps.check_files.outputs.files_exists=='true'
+
+
+  pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Authenticate for Courier Dependency
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+          cache: pip
+      - run: pip install pylint
+      - run: pip install -r requirements.txt
+      - run: ls -la
+      - run: pylint --output-format=json:results.json,colorized **/**.py
+
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+      - run: pip install flake8
+      - run: flake8 **/**.py
+
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+      - run: pip install isort
+      - run: isort --check --diff **/**.py
