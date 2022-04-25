@@ -6,8 +6,9 @@ on:
       username:
         required: true
         type: string
-    DEPLOY_TOKEN_COURIER:
-      required: true
+    secrets:
+      DEPLOY_TOKEN_COURIER:
+        required: true
 
 jobs:
   pytest:
