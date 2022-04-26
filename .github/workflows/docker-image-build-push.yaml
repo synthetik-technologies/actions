@@ -26,7 +26,6 @@ jobs:
       - name: Get docker image
         run: |
           vers=$(cat module-version.txt)
-          echo ${{inputs.is-release}}
           if [ ${{inputs.is-release}} == true ]
           then
             registry=synthetik.azurecr.io
@@ -35,10 +34,12 @@ jobs:
           fi
           image=$registry/${{inputs.image-name}}:$vers
           
-          echo "VERSION=$vers" >> $GITHUB_ENV
           echo "IMAGE=$image" >> $GITHUB_ENV
       - run: cat module-version.txt
       - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
       - name: Build the Docker image
         run: docker login --username synthetikDev --password ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }} synthetikdev.azurecr.io
       - run: docker login --username synthetik --password ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }} synthetik.azurecr.io
