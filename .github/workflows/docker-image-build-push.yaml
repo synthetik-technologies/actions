@@ -2,12 +2,13 @@ name: Docker Image Build
 
 on:
   workflow_call:
-    image-name:
-      required: true
-      type: string
-    is-release:
-      required: true
-      type: string
+    inputs:
+      image-name:
+        required: true
+        type: string
+      is-release:
+        required: true
+        type: string
     secrets:
       DEV_CONTAINER_REGISTRY_PASSWORD:
         required: true
