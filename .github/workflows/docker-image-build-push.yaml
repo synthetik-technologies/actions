@@ -35,9 +35,7 @@ jobs:
             registry=synthetikdev.azurecr.io
           fi
           image=$registry/${{inputs.image-name}}:$vers
-          
           echo "IMAGE=$image" >> $GITHUB_ENV
-      - run: cat module-version.txt
       - uses: actions/checkout@v3
       - name: Add SSH deployment key
         uses: webfactory/ssh-agent@v0.5.4
@@ -54,6 +52,6 @@ jobs:
         with: 
           context: .
           push: true
-          tags: $IMAGE
+          tags: ${{ env.IMAGE }}
           cache-from: type=gha
           cache-to: type=gha, mode=max
