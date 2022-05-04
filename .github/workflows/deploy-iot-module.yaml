@@ -35,7 +35,7 @@ jobs:
           registry: synthetik.azurecr.io
           username: synthetik
           password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
-      - run: echo ${{ inputs.LABELS }}
+      - run: echo ${{ inputs.labels }}
       # - name: Run Azure Command
       #   uses: azure/CLI@v1
       #   with:
