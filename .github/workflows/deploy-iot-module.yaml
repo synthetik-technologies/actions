@@ -6,6 +6,9 @@ on:
       image-name: # Unless I make this an artifact
         required: true
         type: string
+      labels:
+        required: true
+        type: string
     secrets:
       DEV_CONTAINER_REGISTRY_PASSWORD:
         required: true
@@ -32,7 +35,7 @@ jobs:
           registry: synthetik.azurecr.io
           username: synthetik
           password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
-      - run: echo ${{ github.event.labels }}
+      - run: echo ${{ inputs.LABELS }}
       # - name: Run Azure Command
       #   uses: azure/CLI@v1
       #   with:
