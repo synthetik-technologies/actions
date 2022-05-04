@@ -32,15 +32,12 @@ jobs:
           registry: synthetik.azurecr.io
           username: synthetik
           password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
-      - name: Run Azure Command
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az extension add --name azure-iot
-            az iot hub module-identity list -d jacob-test-agx -l "HostName=uci-cloud-coxIotHub.azure-devices.net;SharedAccessKeyName=github-action;SharedAccessKey=g/b2B2QQ8bvEn5ypCrNo2L/qwngN+/nNLz4dXo9wRdo="
-      # - name: Log into Azure IoT Hub
-      #   uses: azure/login@v1
+      - run: echo ${{ github.event.labels }}
+      # - name: Run Azure Command
+      #   uses: azure/CLI@v1
       #   with:
-      #     creds: ${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}
+      #     inlineScript: |
+      #       az extension add --name azure-iot
+      #       az iot hub module-identity list -d jacob-test-agx -l "HostName=uci-cloud-coxIotHub.azure-devices.net;SharedAccessKeyName=github-action;SharedAccessKey=g/b2B2QQ8bvEn5ypCrNo2L/qwngN+/nNLz4dXo9wRdo="
 
       
