@@ -65,3 +65,12 @@ jobs:
           tags: ${{ env.IMAGE }}
           cache-from: type=gha
           cache-to: type=gha, mode=max
+      - name: Create artifact
+        run: |
+          IMAGE=${{ env.IMAGE }}
+          echo $IMAGE > image-name.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: IMAGE
+          path: image-name.txt
