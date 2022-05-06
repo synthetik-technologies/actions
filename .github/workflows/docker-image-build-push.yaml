@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Get docker image name
         run: |
-          vers=$ {{ inputs.version }}
+          vers=${{ inputs.version }}
           if [ ${{inputs.is-release}} == true ]
           then
             registry=synthetik.azurecr.io
