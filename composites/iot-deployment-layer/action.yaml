@@ -26,6 +26,9 @@ inputs:
   deployment-manifest:
     description: Manifest of the deployment
     required: true
+  connection-string:
+    description: Connection string of the IoT Hub
+    required: true
 
 runs:
   using: composite
@@ -37,7 +40,7 @@ runs:
       --layered ${{ inputs.layered }} \
       --priority ${{ inputs.priority }} \
       -d ${{ inputs.deployment-name }} \
-      -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" \
+      -l "${{ inputs.connection-string }}" \
       -t ${{ inputs.devices }} \
       --labels ${{ inputs.labels }} \
       --content '{"modulesContent": { "$edgeAgent": { "properties.desired.modules.JetsonRadarModule": ${{ inputs.deployment-manifest }}}}}'
