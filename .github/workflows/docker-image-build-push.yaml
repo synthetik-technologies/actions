@@ -23,7 +23,7 @@ on:
 
 jobs:
   docker-build:
-    runs-on: [ self-hosted ]
+    runs-on: [ self-hosted, ARM64, iot, docker ]
     steps:
       - name: Get docker image name
         run: |
