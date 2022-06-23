@@ -41,6 +41,6 @@ runs:
       --priority ${{ inputs.priority }} \
       -d ${{ inputs.deployment-name }} \
       -l "${{ inputs.connection-string }}" \
-      -t ${{ inputs.devices }} \
+      -t "${{ inputs.devices }}" \
       --labels "${{ inputs.labels }}" \
       --content '{"modulesContent": { "$edgeAgent": { "properties.desired.modules.${{ inputs.module-name }}": ${{ inputs.deployment-manifest }}}}}'
