@@ -13,7 +13,7 @@ runs:
   using: "composite"
   steps:
   - name: Get Short SHA
-    shell: '/bin/bash'
+    shell: 'bash'
     id: get-short-sha
     run: |
       version=${{ github.sha }}
