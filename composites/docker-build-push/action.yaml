@@ -25,7 +25,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v3
     - name: Get image name with tag
       shell: bash
       run: |
@@ -39,8 +38,7 @@ runs:
     - name: Build and push image
       uses: docker/build-push-action@v2
       with:
-        ssh: default=${{ inputs.supporting-ssh-key }}
-        context: .
+        ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
         tags: ${{ env.IMAGE }}
         platforms: linux/arm64
