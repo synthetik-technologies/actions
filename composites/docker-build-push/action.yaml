@@ -29,7 +29,7 @@ runs:
       shell: bash
       run: |
         image=${{ inputs.registry }}${{ inputs.image-name }}:${{ inputs.version }}
-        echo "IMAGE=$image" >> $GITHUB_ENV
+        echo "FULLIMAGE=$image" >> $GITHUB_ENV
     - name: Setup Qemu
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
@@ -40,7 +40,7 @@ runs:
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
-        tags: ${{ env.IMAGE }}
+        tags: ${{ env.FULLIMAGE }}
         platforms: linux/arm64
         cache-from: type=gha
         cache-to: type=gha, mode=max
