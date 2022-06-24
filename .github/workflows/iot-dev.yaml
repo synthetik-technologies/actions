@@ -2,6 +2,17 @@ name: IoT Module Development
 
 on:
   workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+    secrets:
+      DEPLOY_TOKEN_COURIER:
+        required: true
+      DEV_CONTAINER_REGISTRY_PASSWORD:
+        required: true
+      PROD_CONTAINER_REGISTRY_PASSWORD:
+        required: true
 
 jobs:
   versioning:
@@ -13,3 +24,33 @@ jobs:
       uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
     outputs:
       version: ${{ steps.get-short-sha.outputs.version }}
+  
+  docker-build-push:
+    name: Build and Push Docker Image
+    runs-on: [self-hosted, docker, ARM64]
+    needs: [versioning]
+    steps:
+      - name: Add SSH deployment key 
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+      - name: Log into develop container registry
+        uses: docker/login-action@v1
+        with:
+          registry: synthetikdev.azurecr.io
+          username: synthetikDev
+          password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
+      - name: Log into production container registry
+        uses: docker/login-action@v1
+        with:
+          registry: synthetik.azurecr.io
+          username: synthetik
+          password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
+      - name: Build and push image
+        uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
+        with:
+          image-name: ${{ inputs.IMAGE }}
+          registry: synthetikdev.azurecr.io/
+          version: ${{ needs.versioning.outputs.version }}
+          registry-password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
+          supporting-ssh-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
