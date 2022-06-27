@@ -121,6 +121,7 @@ jobs:
       - create-deployment-layer-for-testing
       - docker-build-push
       - prepare-deployment-name
+      - find-assigned-devices
     steps:
       - name: Delete Previous Deployment
         continue-on-error: true #* Don't fail if a deployment doesn't exist
