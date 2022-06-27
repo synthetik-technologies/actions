@@ -34,7 +34,6 @@ jobs:
     runs-on: [self-hosted, docker, ARM64]
     needs: [versioning]
     steps:
-      - run: echo ${{ github.event.action }}
       - name: Add SSH deployment key 
         uses: webfactory/ssh-agent@v0.5.4
         with:
@@ -139,8 +138,8 @@ jobs:
       - create-deployment-layer-for-testing
       - prepare-deployment-name
       - find-assigned-devices
-      - docker-build-push
       - delete-previous-deployment
+      - docker-build-push
     steps:
     - run: az extension add --name azure-iot
     - name: Push Layered Manifest #! switch to pr name (must be formatted)
@@ -156,7 +155,7 @@ jobs:
         deployment-manifest: ${{ needs.create-deployment-layer-for-testing.outputs.updatedManifest }}
 
   update-deployed-devices:
-    if: github.action.event == 'labeled' || github.action.event == 'unlabeled'
+    if: github.event.action == 'labeled' || github.event.action == 'unlabeled'
     name: Update Devices to Deploy To
     runs-on: ubuntu-latest
     needs:
