@@ -6,6 +6,9 @@ on:
       image:
         required: true
         type: string
+      module:
+        required: true
+        type: string
     secrets:
       DEPLOY_TOKEN_COURIER:
         required: true
@@ -54,3 +57,15 @@ jobs:
           version: ${{ needs.versioning.outputs.version }}
           registry-password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
           supporting-ssh-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+  prepare-deployment-name:
+    runs-on: ubuntu-latest
+    outputs:
+      deploymentName: ${{ steps.create-deployment-name.outputs.deploymentName }}
+    steps:
+      - name: Create Deployment Name
+        id: create-deployment-name
+        run: |
+          deploymentName="${{input.module}}-${{github.ref_name}}"
+          #* set name to lowercase, replace slash with underscore
+          formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
+          echo "::set-output name=deploymentName::$formattedName"
