@@ -142,7 +142,7 @@ jobs:
       - docker-build-push
     steps:
     - run: az extension add --name azure-iot
-    - name: Push Layered Manifest #! switch to pr name (must be formatted)
+    - name: Push Layered Manifest
       uses: synthetik-technologies/actions/composites/iot-deployment-layer@2-separate-versioning-and-docker-building
       with:
         deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
