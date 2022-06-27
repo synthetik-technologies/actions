@@ -29,10 +29,12 @@ jobs:
       version: ${{ steps.get-short-sha.outputs.version }}
   
   docker-build-push:
+    if: github.event.action == 'labeled'
     name: Build and Push Docker Image
     runs-on: [self-hosted, docker, ARM64]
     needs: [versioning]
     steps:
+      - run: echo ${{ github.event.action }}
       - name: Add SSH deployment key 
         uses: webfactory/ssh-agent@v0.5.4
         with:
