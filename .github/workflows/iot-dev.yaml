@@ -69,3 +69,23 @@ jobs:
           #* set name to lowercase, replace slash with underscore
           formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
           echo "::set-output name=deploymentName::$formattedName"
+  find-assigned-devices:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Assigned Test Devices
+      id: get-assigned-test-devices
+      run: |
+        labels="${{ join(github.event.pull_request.labels.*.name, ', ') }}"
+        devices=()
+        for label in ${labels//,/ } #* split labels by comma and space, iterate over
+        do
+          if [[ "$label" == "dev_id"* ]] #* if label is for a device
+          then
+            device=$(echo $label | cut -d ':' -f 2) #* split by colon and get the second part
+            devices+=(deviceId=\'$device\' OR ) #* add to array with 'or' for IoT deployment
+          fi
+        done
+        unset devices[-1] #* remove last OR
+        echo "::set-output name=devices::$(echo ${devices[@]})"
+    outputs:
+      devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
