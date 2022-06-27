@@ -59,6 +59,7 @@ jobs:
           supporting-ssh-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
   
   prepare-deployment-name:
+    name: Create Deployment Name
     runs-on: ubuntu-latest
     outputs:
       deploymentName: ${{ steps.create-deployment-name.outputs.deploymentName }}
