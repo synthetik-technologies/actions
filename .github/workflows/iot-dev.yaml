@@ -112,3 +112,41 @@ jobs:
         moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired.modules.${{ inputs.module }}"]')
         updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="synthetikdev.azurecr.io/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"') #TODO: handle elsewhere
         echo "::set-output name=manifest::$(echo $updatedManifest)"
+
+  delete-previous-deployment:
+    name: Delete Previous Deployment Layer
+    runs-on: ubuntu-latest
+    needs:
+      - create-deployment-layer-for-testing
+      - docker-build-push
+      - prepare-deployment-name
+    steps:
+      - name: Delete Previous Deployment
+        continue-on-error: true #* Don't fail if a deployment doesn't exist
+        id: delete-previous-deployment
+        run: |
+          az extension add --name azure-iot
+          az iot edge deployment delete -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}"
+
+  upload-deployment-layer:
+    name: Upload Deployment Layer
+    runs-on: ubuntu-latest
+    needs:
+      - create-deployment-layer-for-testing
+      - prepare-deployment-name
+      - find-assigned-devices
+      - docker-build-push
+      - delete-previous-deployment
+    steps:
+    - run: az extension add --name azure-iot
+    - name: Push Layered Manifest #! switch to pr name (must be formatted)
+      uses: synthetik-technologies/actions/composites/iot-deployment-layer@2-separate-versioning-and-docker-building
+      with:
+        deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
+        layered: "true"
+        priority: "10"
+        devices: ${{ needs.find-assigned-devices.outputs.devices }}
+        module-name: ${{ inputs.module }}
+        connection-string: "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}"
+        labels: "{'build': 'ci-cd', 'module': '${{ inputs.module }}', 'pull-request': '${{ github.ref_name }}'}"
+        deployment-manifest: ${{ needs.create-deployment-layer-for-testing.outputs.updatedManifest }}
