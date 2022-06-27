@@ -57,6 +57,7 @@ jobs:
           version: ${{ needs.versioning.outputs.version }}
           registry-password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
           supporting-ssh-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+  
   prepare-deployment-name:
     runs-on: ubuntu-latest
     outputs:
@@ -69,6 +70,7 @@ jobs:
           #* set name to lowercase, replace slash with underscore
           formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
           echo "::set-output name=deploymentName::$formattedName"
+  
   find-assigned-devices:
     runs-on: ubuntu-latest
     steps:
@@ -89,3 +91,24 @@ jobs:
         echo "::set-output name=devices::$(echo ${devices[@]})"
     outputs:
       devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
+
+  create-deployment-layer-for-testing:
+    runs-on: ubuntu-latest
+    needs: [versioning]
+    outputs: 
+      updatedManifest: ${{steps.filter-manifest.outputs.manifest}}
+    steps:
+    - run: az extension add --name azure-iot
+    - name: Get Base Deployment
+      id: get-base-deployment
+      run: |
+        deployment=$(az iot edge deployment show -d dev-stable -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}")
+        echo $deployment
+        echo "::set-output name=deployment::$(echo $deployment)"
+          
+    - name: Filter Manifest
+      id: filter-manifest
+      run: |
+        moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired.modules.${{ inputs.module }}"]')
+        updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="synthetikdev.azurecr.io/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"') #TODO: handle elsewhere
+        echo "::set-output name=manifest::$(echo $updatedManifest)"
