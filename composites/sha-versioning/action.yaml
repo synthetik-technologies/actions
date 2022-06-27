@@ -16,5 +16,5 @@ runs:
     shell: 'bash'
     id: get-short-sha
     run: |
-      version=${{ github.sha }}
+      version=${{ github.event.pull_request.head.sha }}
       echo "::set-output name=version::$(echo ${version::7})" #* shortens sha
