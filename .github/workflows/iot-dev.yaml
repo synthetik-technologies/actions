@@ -88,7 +88,7 @@ jobs:
             devices+=(deviceId=\'$device\' OR ) #* add to array with 'or' for IoT deployment
           fi
         done
-        unset devices[-1] #* remove last OR
+        if [ devices[-1] == 'OR' ]; then unset devices[-1]; fi
         echo "::set-output name=devices::$(echo ${devices[@]})"
     outputs:
       devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
