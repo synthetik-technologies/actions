@@ -1,9 +1,9 @@
 name: Upload Deployment Layer
 description: Uploads the deployment layer to the IoT Hub
-author: SynthetiK Technologies
+author: Synthetik Technologies
 inputs:
   deployment-name:
-    description: Name of the deployment
+    description: Name of the new deployment
     required: true
   layered:
     description: Whether the deployment is layered or not
