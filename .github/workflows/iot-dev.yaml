@@ -67,7 +67,7 @@ jobs:
       - name: Create Deployment Name
         id: create-deployment-name
         run: |
-          deploymentName="${{inputs.module}}-PR_${{github.event.pull_request.id}}"
+          deploymentName="${{inputs.module}}-PR_${{github.event.pull_request.number}}"
           #* set name to lowercase, replace slash with underscore
           formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
           echo "::set-output name=deploymentName::$formattedName"
@@ -88,7 +88,7 @@ jobs:
             devices+=(deviceId=\'$device\' OR ) #* add to array with 'or' for IoT deployment
           fi
         done
-        if [ devices[-1] == 'OR' ]; then unset devices[-1]; fi
+        if [ devices[-1] == ' OR' ]; then unset devices[-1]; fi
         echo "::set-output name=devices::$(echo ${devices[@]})"
     outputs:
       devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
