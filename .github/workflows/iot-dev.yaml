@@ -9,6 +9,9 @@ on:
       module:
         required: true
         type: string
+      image-registry:
+        required: true
+        type: string
 
 jobs:
   versioning:
@@ -47,7 +50,7 @@ jobs:
         uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
         with:
           image-name: ${{ inputs.image }}
-          registry: synthetikdev.azurecr.io/
+          registry: ${{ inputs.image-registry }}
           version: ${{ needs.versioning.outputs.version }}
           registry-password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
           supporting-ssh-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
@@ -83,7 +86,7 @@ jobs:
       id: filter-manifest
       run: |
         moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired.modules.${{ inputs.module }}"]')
-        updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="synthetikdev.azurecr.io/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"') #TODO: handle elsewhere
+        updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-registry}}/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"')
         echo "::set-output name=manifest::$(echo $updatedManifest)"
 
   upload-deployment-layer:
