@@ -45,11 +45,9 @@ jobs:
 
   update-deployed-devices:
     name: Update Devices to Deploy To
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, azure ]
     needs:
       - find-assigned-devices
       - prepare-deployment-name
     steps:
-    - run: |
-        az extension add --name azure-iot
-        az iot edge deployment update -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition="${{ needs.find-assigned-devices.outputs.devices }}"
+    - run: az iot edge deployment update -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition="${{ needs.find-assigned-devices.outputs.devices }}"

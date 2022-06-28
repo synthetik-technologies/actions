@@ -9,13 +9,6 @@ on:
       module:
         required: true
         type: string
-    secrets:
-      DEPLOY_TOKEN_COURIER:
-        required: true
-      DEV_CONTAINER_REGISTRY_PASSWORD:
-        required: true
-      PROD_CONTAINER_REGISTRY_PASSWORD:
-        required: true
 
 jobs:
   versioning:
@@ -74,12 +67,11 @@ jobs:
           echo "::set-output name=deploymentName::$formattedName"
 
   create-deployment-layer-for-testing:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, azure]
     needs: [versioning]
     outputs: 
       updatedManifest: ${{steps.filter-manifest.outputs.manifest}}
     steps:
-    - run: az extension add --name azure-iot
     - name: Get Base Deployment
       id: get-base-deployment
       run: |
@@ -96,13 +88,12 @@ jobs:
 
   upload-deployment-layer:
     name: Upload Deployment Layer
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, azure]
     needs:
       - create-deployment-layer-for-testing
       - prepare-deployment-name
       - docker-build-push
     steps:
-    - run: az extension add --name azure-iot
     - name: Delete Previous Deployment
       continue-on-error: true #* Don't fail if a deployment doesn't exist
       id: delete-previous-deployment
