@@ -1,0 +1,47 @@
+name: Deploy IoT Edge Module
+
+on:
+  workflow_call:
+
+jobs:
+  versioning:
+    name: Short SHA Versioning
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Short SHA
+      id: get-short-sha
+      uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
+    outputs:
+      version: ${{ steps.get-short-sha.outputs.version }}
+
+  find-assigned-devices:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Assigned Test Devices
+      id: get-assigned-test-devices
+      run: |
+        labels="${{ join(github.event.pull_request.labels.*.name, ', ') }}"
+        devices=()
+        for label in ${labels//,/ } #* split labels by comma and space, iterate over
+        do
+          if [[ "$label" == "dev_id"* ]] #* if label is for a device
+          then
+            device=$(echo $label | cut -d ':' -f 2) #* split by colon and get the second part
+            devices+=(deviceId=\'$device\' OR ) #* add to array with 'or' for IoT deployment
+          fi
+        done
+        unset devices[-1] || echo 0
+        echo "::set-output name=devices::$(echo ${devices[@]})"
+    outputs:
+      devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
+
+  update-deployed-devices:
+    name: Update Devices to Deploy To
+    runs-on: ubuntu-latest
+    needs:
+      - find-assigned-devices
+      - prepare-deployment-name
+    steps:
+    - run: |
+        az extension add --name azure-iot
+        az iot edge deployment update -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition="${{ needs.find-assigned-devices.outputs.devices }}"
