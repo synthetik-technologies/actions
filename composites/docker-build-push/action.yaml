@@ -28,7 +28,7 @@ runs:
     - name: Get image name with tag
       shell: bash
       run: |
-        image=${{ inputs.registry }}${{ inputs.image-name }}:${{ inputs.version }}
+        image=${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }}
         echo "FULLIMAGE=$image" >> $GITHUB_ENV
     - name: Setup Qemu
       uses: docker/setup-qemu-action@v2
