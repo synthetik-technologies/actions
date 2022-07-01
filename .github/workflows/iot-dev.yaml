@@ -85,7 +85,7 @@ jobs:
     - name: Filter Manifest
       id: filter-manifest
       run: |
-        moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired.modules.${{ inputs.module }}"]')
+        moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired"].modules.${{ inputs.module }}')
         updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-registry}}/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"')
         echo "::set-output name=manifest::$(echo $updatedManifest)"
 
