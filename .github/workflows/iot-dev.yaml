@@ -22,6 +22,8 @@ jobs:
     - name: Get Short SHA
       id: get-short-sha
       uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
+    - name: Print Short SHA
+      run: echo "${{ steps.get-short-sha.outputs.version }}" >> $GITHUB_STEP_SUMMARY
     outputs:
       version: ${{ steps.get-short-sha.outputs.version }}
   
