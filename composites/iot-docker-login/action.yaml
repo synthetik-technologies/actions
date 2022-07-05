@@ -16,7 +16,6 @@ runs:
   using: composite
   steps:
     - name: Add Courier SSH Key
-      shell: bash
       uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ inputs.deploy_token_courier }}
