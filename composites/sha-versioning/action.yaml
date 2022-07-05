@@ -18,3 +18,7 @@ runs:
     run: |
       version=${{ github.event.pull_request.head.sha }}
       echo "::set-output name=version::$(echo ${version::7})" #* shortens sha
+  - name: Build Image Name
+    shell: bash
+    id: build-image-name
+    run: echo "::set-output name=image-name::${{ image-registry }}/${{ image }}:${{ steps.get-short-sha.outputs.short-sha }}"
