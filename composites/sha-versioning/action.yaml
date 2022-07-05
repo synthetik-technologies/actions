@@ -3,11 +3,20 @@ name: Short SHA Versioning
 author: Synthetik Technologies
 
 description: Handles versioning by getting the most recent commit sha
-
+inputs:
+  image:
+    description: The image name
+    required: true
+  image-registry:
+    description: The targeted image registry
+    required: true
 outputs:
-   version:
+  version:
     description: Short sha of the most recent commit
     value: ${{ steps.get-short-sha.outputs.version }}
+  image-name:
+    description: The full image name
+    value: ${{ steps.get-short-sha.outputs.image-name }}
 
 runs:
   using: "composite"
@@ -21,4 +30,4 @@ runs:
   - name: Build Image Name
     shell: bash
     id: build-image-name
-    run: echo "::set-output name=image-name::${{ image-registry }}/${{ image }}:${{ steps.get-short-sha.outputs.short-sha }}"
+    run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ steps.get-short-sha.outputs.short-sha }})"
