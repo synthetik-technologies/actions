@@ -3,33 +3,16 @@ description: Build and (optionally) push Docker images
 author: Synthetik Technologies
 inputs:
   image-name:
-    description: Name of the image to build
+    description: The full image name, including repository and version
     required: true
-  registry:
-    description: Registry to push to. If no registry is provided, image will not be pushed
+  platforms:
+    description: Platforms/architectures to build for. Defaults to AMD64
     required: false
-    default: ""
-  version:
-    description: Image version; if no version is provided, the image will be tagged "latest"
-    required: false
-    default: "latest"
-  registry-password:
-    description: Password for the registry
-    required: false
-    default: ""
-  supporting-ssh-key:
-    description: Path to the supporting ssh key. Used for accessing additional private repositories.
-    required: false
-    default: ""
+    default: "[AMD64]"
 
 runs:
   using: composite
   steps:
-    - name: Get image name with tag
-      shell: bash
-      run: |
-        image=${{ inputs.registry }}/${{ inputs.image-name }}:${{ inputs.version }}
-        echo "FULLIMAGE=$image" >> $GITHUB_ENV
     - name: Setup Qemu
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
@@ -40,7 +23,7 @@ runs:
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
-        tags: ${{ env.FULLIMAGE }}
-        platforms: linux/arm64
+        tags: ${{ inputs.image-name }}
+        platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max
