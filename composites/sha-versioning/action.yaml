@@ -5,7 +5,7 @@ author: Synthetik Technologies
 description: Handles versioning by getting the most recent commit sha
 inputs:
   image:
-    description: The image name
+    description: The image base name
     required: true
   image-registry:
     description: The targeted image registry
@@ -21,13 +21,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-  - name: Get Short SHA
-    shell: 'bash'
-    id: get-short-sha
-    run: |
-      version=${{ github.event.pull_request.head.sha }}
-      echo "::set-output name=version::$(echo ${version::7})" #* shortens sha
-  - name: Build Image Name
-    shell: bash
-    id: build-image-name
-    run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ steps.get-short-sha.outputs.version }})"
+    - name: Get Short SHA
+      shell: bash
+      id: get-short-sha
+      run: |
+        version=${{ github.event.pull_request.head.sha }}
+        echo "::set-output name=version::$(echo ${version::7})" #* shortens sha
+    - name: Build Image Name
+      shell: bash
+      id: build-image-name
+      run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ steps.get-short-sha.outputs.version }})"
