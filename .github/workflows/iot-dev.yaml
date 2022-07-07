@@ -19,19 +19,20 @@ jobs:
     name: Short SHA Versioning
     runs-on: ubuntu-latest
     steps:
-    - name: Get Short SHA
-      id: get-short-sha
-      uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
-      with:
-        image: ${{ inputs.image }}
-        image-registry: ${{ inputs.image-registry }}
-    - name: Print Image
-      run: |
-        echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
-        echo "${{ steps.get-short-sha.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY
+      - name: Get Short SHA
+        id: get-short-sha
+        uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
+        with:
+          image: ${{ inputs.image }}
+          image-registry: ${{ inputs.image-registry }}
+      - name: Print Image
+        run: |
+          echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.get-short-sha.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY
     outputs:
       version: ${{ steps.get-short-sha.outputs.version }}
-  
+      image-name: ${{ steps.get-short-sha.outputs.image-name }}
+
   docker-build-push:
     name: Build and Push Docker Image
     runs-on: [self-hosted, docker, ARM64]
