@@ -47,12 +47,9 @@ jobs:
       - name: Build and push image
         uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
         with:
-          image-name: ${{ inputs.image }}
-          registry: ${{ inputs.image-registry }}
-          version: ${{ needs.versioning.outputs.version }}
-          registry-password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
-          supporting-ssh-key: ${{ secrets.DEPLOY_TOKEN_COURIER }}
-  
+          image-name: ${{ needs.versioning.outputs.image-name }}
+          platforms: "[ARM64]"
+
   prepare-deployment-name:
     name: Create Deployment Name
     runs-on: ubuntu-latest
