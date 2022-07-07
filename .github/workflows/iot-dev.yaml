@@ -67,22 +67,22 @@ jobs:
   create-deployment-layer-for-testing:
     runs-on: [self-hosted, azure]
     needs: [versioning]
-    outputs: 
+    outputs:
       updatedManifest: ${{steps.filter-manifest.outputs.manifest}}
     steps:
-    - name: Get Base Deployment
-      id: get-base-deployment
-      run: |
-        deployment=$(az iot edge deployment show -d dev-stable -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}")
-        echo $deployment
-        echo "::set-output name=deployment::$(echo $deployment)"
-          
-    - name: Filter Manifest
-      id: filter-manifest
-      run: |
-        moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired"].modules.${{ inputs.module }}')
-        updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-registry}}/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"')
-        echo "::set-output name=manifest::$(echo $updatedManifest)"
+      - name: Get Base Deployment
+        id: get-base-deployment
+        run: |
+          deployment=$(az iot edge deployment show -d dev-stable -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}")
+          echo $deployment
+          echo "::set-output name=deployment::$(echo $deployment)"
+
+      - name: Filter Manifest
+        id: filter-manifest
+        run: |
+          moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired"].modules.${{ inputs.module }}')
+          updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-registry}}/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"')
+          echo "::set-output name=manifest::$(echo $updatedManifest)"
 
   upload-deployment-layer:
     name: Upload Deployment Layer
@@ -92,22 +92,22 @@ jobs:
       - prepare-deployment-name
       - docker-build-push
     steps:
-    - name: Remove Devices from Old Deployment
-      continue-on-error: true
-      id: rem-dev-from-dep
-      run: az iot edge deployment update -d ${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition=""
-    - name: Delete Previous Deployment
-      continue-on-error: true #* Don't fail if a deployment doesn't exist
-      id: delete-previous-deployment
-      run: az iot edge deployment delete -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}"
-    - name: Push Layered Manifest
-      uses: synthetik-technologies/actions/composites/iot-deployment-layer@2-separate-versioning-and-docker-building
-      with:
-        deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
-        layered: "true"
-        priority: "10"
-        devices: ""
-        module-name: ${{ inputs.module }}
-        connection-string: "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}"
-        labels: "{'build': 'ci-cd', 'module': '${{ inputs.module }}', 'pull-request': '${{ github.events.pull_request.title }}', 'url': '${{ github.events.pull_request.html_url }}', }"
-        deployment-manifest: ${{ needs.create-deployment-layer-for-testing.outputs.updatedManifest }}
+      - name: Remove Devices from Old Deployment
+        continue-on-error: true
+        id: rem-dev-from-dep
+        run: az iot edge deployment update -d ${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition=""
+      - name: Delete Previous Deployment
+        continue-on-error: true #* Don't fail if a deployment doesn't exist
+        id: delete-previous-deployment
+        run: az iot edge deployment delete -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}"
+      - name: Push Layered Manifest
+        uses: synthetik-technologies/actions/composites/iot-deployment-layer@2-separate-versioning-and-docker-building
+        with:
+          deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
+          layered: "true"
+          priority: "10"
+          devices: ""
+          module-name: ${{ inputs.module }}
+          connection-string: "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}"
+          labels: "{'build': 'ci-cd', 'module': '${{ inputs.module }}', 'pull-request': '${{ github.events.pull_request.title }}', 'url': '${{ github.events.pull_request.html_url }}', }"
+          deployment-manifest: ${{ needs.create-deployment-layer-for-testing.outputs.updatedManifest }}
