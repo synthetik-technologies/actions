@@ -48,7 +48,7 @@ jobs:
         uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
         with:
           image-name: ${{ needs.versioning.outputs.image-name }}
-          platforms: "[ARM64]"
+          platforms: "linux/arm64"
 
   prepare-deployment-name:
     name: Create Deployment Name
