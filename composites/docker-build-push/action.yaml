@@ -8,7 +8,7 @@ inputs:
   platforms:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
-    default: "[AMD64]"
+    default: '["AMD64"]'
 
 runs:
   using: composite
