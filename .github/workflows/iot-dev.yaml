@@ -95,7 +95,7 @@ jobs:
       - name: Remove Devices from Old Deployment
         continue-on-error: true
         id: rem-dev-from-dep
-        run: az iot edge deployment update -d ${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition=null
+        run: az iot edge deployment update -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition=null
       - name: Delete Previous Deployment
         continue-on-error: true #* Don't fail if a deployment doesn't exist
         id: delete-previous-deployment
