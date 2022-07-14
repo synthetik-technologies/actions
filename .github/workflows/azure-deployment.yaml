@@ -1,0 +1,102 @@
+name: Deploying to azure
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+      module:
+        required: true
+        type: string
+jobs:
+  prepare-deployment-name:
+    name: Create Deployment Name
+    runs-on: ubuntu-latest
+    outputs:
+      deploymentName: ${{ steps.create-deployment-name.outputs.deploymentName }}
+    steps:
+      - name: Create Deployment Name
+        id: create-deployment-name
+        run: |
+          deploymentName="${{inputs.module}}-PR_${{github.event.pull_request.number}}"
+          #* set name to lowercase, replace slash with underscore
+          formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
+          echo "::set-output name=deploymentName::$formattedName"
+      - name: Output Deployment Name
+        run: |
+          echo "### Deployment Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.create-deployment-name.outputs.deploymentName }}" >> $GITHUB_STEP_SUMMARY
+
+  create-deployment-layer-for-testing:
+    runs-on: [self-hosted, azure]
+    outputs:
+      updatedManifest: ${{steps.filter-manifest.outputs.manifest}}
+    steps:
+      - name: Get Base Deployment
+        id: get-base-deployment
+        run: |
+          deployment=$(az iot edge deployment show -d dev-stable -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}")
+          echo "::set-output name=deployment::$(echo $deployment)"
+
+      - name: Filter Manifest
+        id: filter-manifest
+        run: |
+          moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired"].modules.${{ inputs.module }}')
+          updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-name }}"')
+          echo "::set-output name=manifest::$(echo $updatedManifest)"
+
+      - name: Output Manifest
+        id: output-manifest
+        run: |
+          echo "### Manifest" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.filter-manifest.outputs.manifest }}" >> $GITHUB_STEP_SUMMARY
+
+  find-assigned-devices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Assigned Test Devices
+        id: get-assigned-test-devices
+        run: |
+          labels="${{ join(github.event.pull_request.labels.*.name, ', ') }}"
+          devices=()
+          for label in ${labels//,/ } #* split labels by comma and space, iterate over
+          do
+            if [[ "$label" == "dev_id"* ]] #* if label is for a device
+            then
+              device=$(echo $label | cut -d ':' -f 2) #* split by colon and get the second part
+              devices+=(deviceId=\'$device\' OR ) #* add to array with 'or' for IoT deployment
+            fi
+          done
+          unset devices[-1] || echo 0
+          echo "::set-output name=devices::$(echo ${devices[@]})"
+    outputs:
+      devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
+
+  upload-deployment-layer:
+    name: Upload Deployment Layer
+    runs-on: [self-hosted, azure]
+    needs:
+      - create-deployment-layer-for-testing
+      - prepare-deployment-name
+      - find-assigned-devices
+    steps:
+      - name: Remove Devices from Old Deployment
+        continue-on-error: true
+        id: rem-dev-from-dep
+        run: az iot edge deployment update -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}" -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" --set targetCondition=null
+      - name: Delete Previous Deployment
+        continue-on-error: true #* Don't fail if a deployment doesn't exist
+        id: delete-previous-deployment
+        run: az iot edge deployment delete -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}"
+      - name: Push Layered Manifest
+        uses: synthetik-technologies/actions/composites/iot-deployment-layer@2-separate-versioning-and-docker-building
+        with:
+          deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
+          layered: "true"
+          priority: "10"
+          devices: ${{ needs.find-assigned-devices.outputs.devices }}
+          module-name: ${{ inputs.module }}
+          connection-string: "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}"
+          labels: "{'build': 'ci-cd', 'module': '${{ inputs.module }}', 'pull-request': '${{ github.events.pull_request.title }}', 'url': '${{ github.events.pull_request.html_url }}', }"
+          deployment-manifest: ${{ needs.create-deployment-layer-for-testing.outputs.updatedManifest }}
