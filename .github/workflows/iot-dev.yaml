@@ -15,7 +15,7 @@ on:
 
 jobs:
   versioning:
-    name: Short SHA Versioning
+    name: Short SHA Image Naming
     runs-on: ubuntu-latest
     steps:
       - name: Get Short SHA
@@ -24,7 +24,7 @@ jobs:
         with:
           image: ${{ inputs.image }}
           image-registry: ${{ inputs.image-registry }}
-      - name: Print Image
+      - name: Output Image Name
         run: |
           echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.get-short-sha.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY
@@ -62,6 +62,10 @@ jobs:
           #* set name to lowercase, replace slash with underscore
           formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
           echo "::set-output name=deploymentName::$formattedName"
+      - name: Output Deployment Name
+        run: |
+          echo "### Deployment Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.create-deployment-name.outputs.deploymentName }}" >> $GITHUB_STEP_SUMMARY
 
   create-deployment-layer-for-testing:
     runs-on: [self-hosted, azure]
@@ -73,7 +77,6 @@ jobs:
         id: get-base-deployment
         run: |
           deployment=$(az iot edge deployment show -d dev-stable -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}")
-          echo $deployment
           echo "::set-output name=deployment::$(echo $deployment)"
 
       - name: Filter Manifest
@@ -82,6 +85,12 @@ jobs:
           moduleManifest=$(echo '${{ steps.get-base-deployment.outputs.deployment }}' | jq '.content.modulesContent."$edgeAgent"["properties.desired"].modules.${{ inputs.module }}')
           updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-registry}}/${{ inputs.image }}:${{ needs.versioning.outputs.version }}"')
           echo "::set-output name=manifest::$(echo $updatedManifest)"
+
+      - name: Output Manifest
+        id: output-manifest
+        run: |
+          echo "### Manifest Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.filter-manifest.outputs.manifest }}" >> $GITHUB_STEP_SUMMARY
 
   upload-deployment-layer:
     name: Upload Deployment Layer
