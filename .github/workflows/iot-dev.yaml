@@ -10,8 +10,9 @@ on:
         required: true
         type: string
     outputs:
-      description: "The image name"
-      value: ${{ jobs.versioning.outputs.image-name }}
+      image-name:
+        description: "The image name"
+        value: ${{ jobs.versioning.outputs.image-name }}
 
 jobs:
   versioning:
