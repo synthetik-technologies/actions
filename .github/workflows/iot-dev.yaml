@@ -15,7 +15,6 @@ on:
 
 jobs:
   versioning:
-    if: github.event.action != 'labeled' && github.event.action != 'unlabeled'
     name: Short SHA Versioning
     runs-on: ubuntu-latest
     steps:
