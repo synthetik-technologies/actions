@@ -1,4 +1,4 @@
-name: Deploying to azure
+name: Deploying to Azure
 
 on:
   workflow_call:
