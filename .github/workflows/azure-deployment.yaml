@@ -96,7 +96,7 @@ jobs:
         id: delete-previous-deployment
         run: az iot edge deployment delete -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}" -d "${{ needs.prepare-deployment-name.outputs.deploymentName }}"
       - name: Push Layered Manifest
-        uses: synthetik-technologies/actions/composites/iot-deployment-layer@2-separate-versioning-and-docker-building
+        uses: synthetik-technologies/actions/composites/upload-azure-deployment@2-separate-versioning-and-docker-building
         with:
           deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
           layered: "true"
