@@ -1,5 +1,5 @@
-name: Upload Deployment Layer
-description: Uploads the deployment layer to the IoT Hub
+name: Upload Deployment Manifest
+description: Uploads a deployment manifest to the IoT Hub
 author: Synthetik Technologies
 inputs:
   deployment-name:
@@ -8,11 +8,11 @@ inputs:
   layered:
     description: Whether the deployment is layered or not
     required: false
-    default: 'true'
+    default: "true"
   priority:
     description: Priority of the deployment, higher numbers are prioritized
     required: false
-    default: '10'
+    default: "10"
   devices:
     description: List of devices to assign to the deployment
     required: true
@@ -22,7 +22,7 @@ inputs:
   labels:
     description: Labels to assign to the deployment
     required: false
-    default: '{}'
+    default: "{}"
   deployment-manifest:
     description: Manifest of the deployment
     required: true
@@ -33,14 +33,14 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Push New Deployment
-    shell: 'bash'
-    run: |
-      az iot edge deployment create \
-      --layered ${{ inputs.layered }} \
-      --priority ${{ inputs.priority }} \
-      -d ${{ inputs.deployment-name }} \
-      -l "${{ inputs.connection-string }}" \
-      -t "${{ inputs.devices }}" \
-      --labels "${{ inputs.labels }}" \
-      --content '{"modulesContent": { "$edgeAgent": { "properties.desired.modules.${{ inputs.module-name }}": ${{ inputs.deployment-manifest }}}}}'
+    - name: Push New Deployment
+      shell: "bash"
+      run: |
+        az iot edge deployment create \
+        --layered ${{ inputs.layered }} \
+        --priority ${{ inputs.priority }} \
+        -d ${{ inputs.deployment-name }} \
+        -l "${{ inputs.connection-string }}" \
+        -t "${{ inputs.devices }}" \
+        --labels "${{ inputs.labels }}" \
+        --content '{"modulesContent": { "$edgeAgent": { "properties.desired.modules.${{ inputs.module-name }}": ${{ inputs.deployment-manifest }}}}}'

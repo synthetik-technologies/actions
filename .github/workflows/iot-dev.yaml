@@ -39,7 +39,7 @@ jobs:
     needs: [versioning]
     steps:
       - name: Log Into Registries
-        uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
+        uses: synthetik-technologies/actions/composites/upload-iot-docker-login@2-separate-versioning-and-docker-building
         with:
           deploy_token_courier: ${{ secrets.DEPLOY_TOKEN_COURIER }}
           dev_container_registry_password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
