@@ -104,5 +104,5 @@ jobs:
           devices: ${{ needs.find-assigned-devices.outputs.devices }}
           module-name: ${{ inputs.module }}
           connection-string: "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}"
-          labels: "{'build': 'ci-cd', 'module': '${{ inputs.module }}', 'pull-request': '${{ github.events.pull_request.title }}', 'url': '${{ github.events.pull_request.html_url }}', }"
+          labels: "{'build': 'automatic', 'module': '${{ inputs.module }}', 'pull-request': '${{ github.events.pull_request.pull_request.title }}', 'url': '${{ github.events.pull_request.pull_request.html_url }}', }"
           deployment-manifest: ${{ needs.create-deployment-layer-for-testing.outputs.updatedManifest }}
