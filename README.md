@@ -7,26 +7,24 @@ This repository holds a variety of workflows and composite actions to be used in
 
 ### Azure Deployment (`azure-deployment.yaml`)
 
-_Uploads single modules as layered deployments to GitHub Actions_
+Uploads single modules as layered deployments to GitHub Actions
 
-#### Inputs
-
-- `image-name`: The full name of the Docker image to be deployed
-  - Must include registry, name, and version
-- `module`: The module name in Azure
+- Inputs:
+  - `image-name`: the full name of the Docker image to be deployed
+    - must include registry, name, and version
+  - `module`: the module name in Azure
 
 ### Iot Module Build (`iot-dev.yaml`)
 
-_Versions, names, builds, and pushes a Docker container for IoT_
+Versions, names, builds, and pushes a Docker container for IoT
 
-#### Inputs
+- Inputs:
 
-- `image`: Base image name (i.e. jetsonradarmodule)
-- `image-registry`: URL of the registry to push to
+  - `image`: base image name (i.e. jetsonradarmodule)
+  - `image-registry`: the URL of the registry to push to
 
-#### Outputs
-
-- `image-name`: Image name with registry and version
+- Outputs:
+  - `image-name`: image name with registry and version
 
 ## Composite Actions
 
@@ -35,11 +33,11 @@ _Versions, names, builds, and pushes a Docker container for IoT_
 Builds and pushes a Docker image
 
 - Inputs:
-  - `image-name`: Image name with registry and version
-  - `platforms`: Platforms and architectures to build/push to
-    - Can be a string: `'linux/arm64'`
-    - Can also be a comma-separated string: `'linux/arm64,linux/amd64'`
-    - Note: The base architecture does _not_ need to be one of the desired platforms or architectures, however it will often be quicker
+  - `image-name`: image name with registry and version
+  - `platforms`: platforms and architectures to build/push to
+    - can be a string: `'linux/arm64'`
+    - can also be a comma-separated string: `'linux/arm64,linux/amd64'`
+    - note: The base architecture does _not_ need to be one of the desired platforms or architectures, however it will often be quicker
 
 ### IoT Docker Login (`iot-docker-login`)
 
