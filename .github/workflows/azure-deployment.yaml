@@ -23,17 +23,18 @@ jobs:
           #* set name to lowercase, replace slash with underscore
           formattedName=$(echo $deploymentName | tr '/' '_' | tr '[:upper:]' '[:lower:]')
           echo "::set-output name=deploymentName::$formattedName"
-      - name: Output Deployment Name
+      - name: Print Deployment Name
         run: |
           echo "### Deployment Name" >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.create-deployment-name.outputs.deploymentName }}" >> $GITHUB_STEP_SUMMARY
 
   create-deployment-layer-for-testing:
+    name: Create Deployment Layer
     runs-on: [self-hosted, azure]
     outputs:
       updatedManifest: ${{steps.filter-manifest.outputs.manifest}}
     steps:
-      - name: Get Base Deployment
+      - name: Get Stable Deployment
         id: get-base-deployment
         run: |
           deployment=$(az iot edge deployment show -d dev-stable -l "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}")
@@ -46,11 +47,11 @@ jobs:
           updatedManifest=$(echo "$moduleManifest" | jq '.settings.image="${{ inputs.image-name }}"')
           echo "::set-output name=manifest::$(echo $updatedManifest)"
 
-      - name: Output Manifest
+      - name: Print Manifest
         id: output-manifest
         run: |
           echo "### Manifest" >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.filter-manifest.outputs.manifest }}" >> $GITHUB_STEP_SUMMARY
+          echo "${{ toJSON(steps.filter-manifest.outputs.manifest) }}" >> $GITHUB_STEP_SUMMARY
 
   find-assigned-devices:
     runs-on: ubuntu-latest
@@ -70,6 +71,11 @@ jobs:
           done
           unset devices[-1] || echo 0
           echo "::set-output name=devices::$(echo ${devices[@]})"
+
+      - name: Print Devices
+        run: |
+          echo "### Devices" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.get-assigned-test-devices.outputs.devices }}" >> $GITHUB_STEP_SUMMARY
     outputs:
       devices: ${{ steps.get-assigned-test-devices.outputs.devices }}
 
@@ -94,7 +100,7 @@ jobs:
         with:
           deployment-name: ${{ needs.prepare-deployment-name.outputs.deploymentName }}
           layered: "true"
-          priority: "10"
+          priority: "12"
           devices: ${{ needs.find-assigned-devices.outputs.devices }}
           module-name: ${{ inputs.module }}
           connection-string: "${{ secrets.SYNTHETIKDEV_UVIS_IOT_HUB_CSTRING }}"
