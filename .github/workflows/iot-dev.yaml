@@ -11,12 +11,12 @@ on:
         type: string
     outputs:
       image-name:
-        description: "The image name"
+        description: "The full image name, with registry and version"
         value: ${{ jobs.versioning.outputs.image-name }}
 
 jobs:
   versioning:
-    name: Short SHA Image Naming
+    name: Short SHA Naming
     runs-on: ubuntu-latest
     steps:
       - name: Get Short SHA
