@@ -12,6 +12,10 @@ inputs:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
     default: "linux/amd64"
+  version:
+    description: The version tag
+    required: false
+    default: "latest"
 outputs:
   image-name:
     description: The full image name, including repository and version
@@ -22,7 +26,7 @@ runs:
   steps:
     - name: Name Image
       shell: "bash"
-      run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ steps.get-short-sha.outputs.version }})"
+      run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ inputs.version }})"
     - name: Setup Qemu
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
