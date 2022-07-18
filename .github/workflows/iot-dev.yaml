@@ -40,8 +40,10 @@ jobs:
         id: build-push-image
         uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
         with:
-          image-name: ${{ needs.versioning.outputs.image-name }}
+          image: ${{ inputs.image }}
+          image-registry: ${{ inputs.image-registry }}
           platforms: "linux/arm64"
+          version: "${{ steps.versioning.outputs.version }}"
       - name: Output Image Name
         run: |
           echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
