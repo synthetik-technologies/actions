@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Version
-        uses: synthetik-technologies/actions/composites/semantic-versioning@2-separate-versioning-and-docker-building
+        uses: synthetik-technologies/actions/composites/semantic-versioning@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
