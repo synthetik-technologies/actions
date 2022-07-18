@@ -32,13 +32,6 @@ runs:
       shell: bash
       run: |
         npx semantic-release
-        echo "outputs:
-          version: ${{ steps.get-semantic-version.outputs.version }}"
+        echo "outputs:version: ${{ steps.get-semantic-version.outputs.version }}"
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
-
-    - name: Summarize Version
-      shell: bash
-      run: |
-        "echo '### Semantic Version' >> $GITHUB_STEP_SUMMARY"
-        "echo '{{ steps.get-semantic-version.outputs.version }}' >> $GITHUB_STEP_SUMMARY"
