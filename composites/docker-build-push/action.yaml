@@ -12,6 +12,10 @@ inputs:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
     default: "linux/amd64"
+  version:
+    description: The version tag
+    required: false
+    default: "latest"
 outputs:
   image-name:
     description: The full image name, including repository and version
