@@ -1,0 +1,15 @@
+name: Actions Repo Versioning
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Version
+        uses: synthetik-technologies/actions/composites/semantic-versioning@2-separate-versioning-and-docker-building

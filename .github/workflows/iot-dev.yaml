@@ -1,0 +1,51 @@
+name: IoT Module Development
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+      image-registry:
+        required: true
+        type: string
+    outputs:
+      image-name:
+        description: "The full image name, with registry and version"
+        value: ${{ jobs.docker-build-push.outputs.image-name }}
+
+jobs:
+  versioning:
+    name: Shorten SHA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Short SHA
+        id: get-short-sha
+        uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
+    outputs:
+      version: ${{ steps.get-short-sha.outputs.version }}
+
+  docker-build-push:
+    name: Docker Build and Push
+    runs-on: [self-hosted, docker, ARM64]
+    needs: [versioning]
+    steps:
+      - name: Log Into Registries
+        uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
+        with:
+          deploy_token_courier: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+          dev_container_registry_password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
+          prod_container_registry_password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
+      - run: echo "${{ needs.versioning.outputs.version }}"
+      - name: Build and push image
+        id: build-push-image
+        uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
+        with:
+          image: ${{ inputs.image }}
+          image-registry: ${{ inputs.image-registry }}
+          platforms: "linux/arm64"
+          version: ${{ needs.versioning.outputs.version }}
+      - name: Output Image Name
+        run: |
+          echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.build-push-image.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY

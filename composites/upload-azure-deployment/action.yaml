@@ -1,0 +1,46 @@
+name: Upload Deployment Manifest
+description: Uploads a deployment manifest to the IoT Hub
+author: Synthetik Technologies
+inputs:
+  deployment-name:
+    description: Name of the new deployment
+    required: true
+  layered:
+    description: Whether the deployment is layered or not
+    required: false
+    default: "true"
+  priority:
+    description: Priority of the deployment, higher numbers are prioritized
+    required: false
+    default: "10"
+  devices:
+    description: List of devices to assign to the deployment
+    required: true
+  module-name:
+    description: Name of the module to deploy
+    required: true
+  labels:
+    description: Labels to assign to the deployment
+    required: false
+    default: "{}"
+  deployment-manifest:
+    description: Manifest of the deployment
+    required: true
+  connection-string:
+    description: Connection string of the IoT Hub
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Push New Deployment
+      shell: "bash"
+      run: |
+        az iot edge deployment create \
+        --layered ${{ inputs.layered }} \
+        --priority ${{ inputs.priority }} \
+        -d ${{ inputs.deployment-name }} \
+        -l "${{ inputs.connection-string }}" \
+        -t "${{ inputs.devices }}" \
+        --labels "${{ inputs.labels }}" \
+        --content '{"modulesContent": { "$edgeAgent": { "properties.desired.modules.${{ inputs.module-name }}": ${{ inputs.deployment-manifest }}}}}'

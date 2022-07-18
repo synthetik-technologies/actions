@@ -1,0 +1,51 @@
+name: IoT Module Production
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+      image-registry:
+        required: true
+        type: string
+    outputs:
+      image-name:
+        description: "The full image name, with registry and version"
+        value: ${{ jobs.versioning.outputs.image-name }}
+
+jobs:
+  versioning:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create-release
+        uses: synthetik-technologies/actions/composites/semantic-versioning@2-separate-versioning-and-docker-building
+        with:
+          image: ${{ inputs.image }}
+          image-registry: ${{ inputs.image-registry }}
+      - name: Output Image Name
+        run: |
+          echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.get-short-sha.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY
+    outputs:
+      version: ${{ steps.get-short-sha.outputs.version }}
+      image-name: ${{ steps.get-short-sha.outputs.image-name }}
+
+  docker-build-push:
+    name: Build and Push Docker Image
+    runs-on: [self-hosted, docker, ARM64]
+    needs: [versioning]
+    steps:
+      - name: Log Into Registries
+        uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
+        with:
+          deploy_token_courier: ${{ secrets.DEPLOY_TOKEN_COURIER }}
+          dev_container_registry_password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
+          prod_container_registry_password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
+      - name: Build and push image
+        uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
+        with:
+          image-name: ${{ needs.versioning.outputs.image-name }}
+          platforms: "linux/arm64"

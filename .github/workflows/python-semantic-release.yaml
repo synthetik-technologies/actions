@@ -1,0 +1,49 @@
+name: Python Semantic Release
+
+on:
+  workflow_call:
+    inputs:
+      username:
+        required: true
+        type: string
+      is-release:
+        required: true
+        type: boolean
+  
+jobs:
+
+  sem-ver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+          cache: pip
+      - name: Log into git
+        run: |
+          git config --global user.name "${{inputs.username}}"
+      - name: Install python-semantic-release
+        run: pip install git+https://github.com/jacksbox/python-semantic-release@feature/prerelease-reworked
+      - name: Run semantic release
+        run: |
+          if [ ${{inputs.is-release}} == true ]
+          then 
+            semantic-release version
+          else
+            semantic-release --prerelease version
+          fi
+          vers=$(semantic-release --current print-version)
+          echo $vers > module-version.txt
+      - name: Push branches and tags
+        run: |
+          git push
+          git push --tags
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: version
+          path: module-version.txt

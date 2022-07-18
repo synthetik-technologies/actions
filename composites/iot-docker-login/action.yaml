@@ -1,0 +1,33 @@
+name: Log into IoT Docker Registries
+description: Log into the prod and dev Docker registries
+author: Synthetik Technologies
+inputs:
+  deploy_token_courier:
+    description: Deploy token for courier
+    required: true
+  dev_container_registry_password:
+    description: Password for the dev container registry
+    required: true
+  prod_container_registry_password:
+    description: Password for the prod container registry
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Add Courier SSH Key
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ inputs.deploy_token_courier }}
+    - name: Log into develop container registry
+      uses: docker/login-action@v1
+      with:
+        registry: synthetikdev.azurecr.io
+        username: synthetikDev
+        password: ${{ inputs.dev_container_registry_password }}
+    - name: Log into production container registry
+      uses: docker/login-action@v1
+      with:
+        registry: synthetik.azurecr.io
+        username: synthetik
+        password: ${{ inputs.prod_container_registry_password }}
