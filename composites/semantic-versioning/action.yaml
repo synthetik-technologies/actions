@@ -30,6 +30,9 @@ runs:
 
     - name: Create Release
       shell: bash
-      run: npx semantic-release
+      run: |
+        npx semantic-release
+        echo "outputs:
+          version: ${{ steps.get-semantic-version.outputs.version }}"
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
