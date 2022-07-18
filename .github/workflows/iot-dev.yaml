@@ -12,26 +12,18 @@ on:
     outputs:
       image-name:
         description: "The full image name, with registry and version"
-        value: ${{ jobs.versioning.outputs.image-name }}
+        value: ${{ jobs.docker-build-push.outputs.image-name }}
 
 jobs:
   versioning:
-    name: Short SHA Naming
+    name: Short SHA
     runs-on: ubuntu-latest
     steps:
       - name: Get Short SHA
         id: get-short-sha
         uses: synthetik-technologies/actions/composites/sha-versioning@2-separate-versioning-and-docker-building
-        with:
-          image: ${{ inputs.image }}
-          image-registry: ${{ inputs.image-registry }}
-      - name: Output Image Name
-        run: |
-          echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.get-short-sha.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY
     outputs:
       version: ${{ steps.get-short-sha.outputs.version }}
-      image-name: ${{ steps.get-short-sha.outputs.image-name }}
 
   docker-build-push:
     name: Build and Push Docker Image
@@ -45,7 +37,12 @@ jobs:
           dev_container_registry_password: ${{ secrets.DEV_CONTAINER_REGISTRY_PASSWORD }}
           prod_container_registry_password: ${{ secrets.PROD_CONTAINER_REGISTRY_PASSWORD }}
       - name: Build and push image
+        id: build-push-image
         uses: synthetik-technologies/actions/composites/docker-build-push@2-separate-versioning-and-docker-building
         with:
           image-name: ${{ needs.versioning.outputs.image-name }}
           platforms: "linux/arm64"
+      - name: Output Image Name
+        run: |
+          echo "### Docker Image Name" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.build-push-image.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY

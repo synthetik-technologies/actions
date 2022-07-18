@@ -2,17 +2,27 @@ name: Build and Push Docker Image
 description: Build and (optionally) push Docker images
 author: Synthetik Technologies
 inputs:
-  image-name:
-    description: The full image name, including repository and version
+  image:
+    description: The image base name
+    required: true
+  image-registry:
+    description: The targeted image registry
     required: true
   platforms:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
     default: "linux/amd64"
+outputs:
+  image-name:
+    description: The full image name, including repository and version
+    value: ${{ steps.build-image-name.outputs.image-name }}
 
 runs:
   using: composite
   steps:
+    - name: Name Image
+      shell: "bash"
+      run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ steps.get-short-sha.outputs.version }})"
     - name: Setup Qemu
       uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
@@ -23,7 +33,7 @@ runs:
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
-        tags: ${{ inputs.image-name }}
+        tags: ${{ outputs.steps.build-image-name.outputs.image-name }}
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max
