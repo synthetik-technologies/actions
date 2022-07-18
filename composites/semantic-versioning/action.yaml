@@ -2,6 +2,10 @@ name: Semantic Version
 description: Semantic versioning
 author: Synthetik Technologies
 
+inputs:
+  github_token:
+    description: GitHub token
+    required: true
 outputs:
   version:
     description: The semantic version
@@ -30,4 +34,4 @@ runs:
         "npx semantic-release"
         echo "::set-output name=version::${{ env.RELEASE }}"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
