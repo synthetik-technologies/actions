@@ -25,6 +25,7 @@ runs:
   using: composite
   steps:
     - name: Name Image
+      id: name-image
       shell: "bash"
       run: echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ inputs.version }})"
     - name: Setup Qemu
@@ -37,7 +38,7 @@ runs:
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
-        tags: ${{ steps.build-image-name.outputs.image-name }}
+        tags: ${{ steps.name-image.outputs.image-name }}
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max
