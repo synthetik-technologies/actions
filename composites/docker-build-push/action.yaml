@@ -33,7 +33,7 @@ runs:
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
-        tags: ${{ outputs.steps.build-image-name.outputs.image-name }}
+        tags: ${{ steps.build-image-name.outputs.image-name }}
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max

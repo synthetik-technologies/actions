@@ -16,7 +16,7 @@ on:
 
 jobs:
   versioning:
-    name: Short SHA
+    name: Shorten SHA
     runs-on: ubuntu-latest
     steps:
       - name: Get Short SHA
@@ -26,7 +26,7 @@ jobs:
       version: ${{ steps.get-short-sha.outputs.version }}
 
   docker-build-push:
-    name: Build and Push Docker Image
+    name: Docker Build and Push
     runs-on: [self-hosted, docker, ARM64]
     needs: [versioning]
     steps:
