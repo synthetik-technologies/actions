@@ -16,7 +16,7 @@ runs:
       shell: bash
       id: get-short-sha
       run: |
-        if '${{ github.event_name }}' == 'pull_request'; then
+        if [ ${{ github.event_name }} == 'pull_request' ]; then
            sha=${{ github.event.pull_request.head.sha }}
         else
            sha=${{ github.sha }}
