@@ -17,7 +17,7 @@ runs:
 
     - name: Check Cache
       id: check-cache
-      uses: actions/check-cache@v3
+      uses: actions/cache@v3
       with:
         path: blastfoam_*.deb
         key: ${{ hashFiles('blastfoam-src/checksum.tar.gz') }}
