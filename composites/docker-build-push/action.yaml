@@ -39,7 +39,7 @@ runs:
       uses: docker/setup-buildx-action@v1
     - name: Build and Push with SSH
       uses: docker/build-push-action@v2
-      if: ${{ inputs.ssh-key-needed == "true" }}
+      if: inputs.ssh-key-needed == "true"
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
@@ -49,7 +49,7 @@ runs:
         cache-to: type=gha, mode=max
     - name: Build and Push No SSH
       uses: docker/build-push-action@v2
-      if: ${{ inputs.ssh-key-needed == "false" }}
+      if: inputs.ssh-key-needed == "false"
       with:
         push: true
         tags: ${{ steps.name-image.outputs.image-name }}
