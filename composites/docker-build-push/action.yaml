@@ -7,7 +7,8 @@ inputs:
     required: true
   image-registry:
     description: The targeted image registry
-    required: true
+    required: false
+    default: ""
   platforms:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
