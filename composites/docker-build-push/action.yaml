@@ -12,6 +12,14 @@ inputs:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
     default: "linux/amd64"
+  push:
+    description: Whether to push the image to the registry
+    required: false
+    default: "true"
+  ssh-key-needed:
+    description: Whether an SSH key is needed to pull repositories
+    required: false
+    default: "false"
   version:
     description: The version tag
     required: false
@@ -33,11 +41,21 @@ runs:
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
-    - name: Build and push image
+    - name: Build and Push with SSH
       uses: docker/build-push-action@v2
+      if: inputs.ssh-key-needed == 'true'
       with:
         ssh: default=${{ env.SSH_AUTH_SOCK }}
-        push: true
+        push: ${{ inputs.push }}
+        tags: ${{ steps.name-image.outputs.image-name }}
+        platforms: ${{ inputs.platforms }}
+        cache-from: type=gha
+        cache-to: type=gha, mode=max
+    - name: Build and Push No SSH
+      uses: docker/build-push-action@v2
+      if: inputs.ssh-key-needed == 'false'
+      with:
+        push: ${{ inputs.push }}
         tags: ${{ steps.name-image.outputs.image-name }}
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
