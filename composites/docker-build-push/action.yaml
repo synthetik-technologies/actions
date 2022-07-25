@@ -55,6 +55,7 @@ runs:
       uses: docker/build-push-action@v2
       if: inputs.ssh-key-needed == 'true'
       with:
+        load: ${{ inputs.load-local }}
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: ${{ inputs.push }}
         tags: ${{ steps.name-image.outputs.image-name }}
@@ -65,6 +66,7 @@ runs:
       uses: docker/build-push-action@v2
       if: inputs.ssh-key-needed == 'false'
       with:
+        load: ${{ inputs.load-local }}
         push: ${{ inputs.push }}
         tags: ${{ steps.name-image.outputs.image-name }}
         platforms: ${{ inputs.platforms }}
