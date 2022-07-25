@@ -28,7 +28,7 @@ inputs:
 outputs:
   image-name:
     description: The full image name, including repository and version
-    value: ${{ steps.build-image-name.outputs.image-name }}
+    value: ${{ steps.name-image.outputs.image-name }}
 
 runs:
   using: composite
