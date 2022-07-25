@@ -38,7 +38,7 @@ runs:
       shell: "bash"
       run: |
         if [ -z "${{ inputs.image-registry }}" ]; then
-          echo "::set-output name=image-name::$(echo ${ inputs.image }}:${{ inputs.version }})"
+          echo "::set-output name=image-name::$(echo ${{ inputs.image }}:${{ inputs.version }})"
         else
           echo "::set-output name=image-name::$(echo ${{ inputs.image-registry }}/${{ inputs.image }}:${{ inputs.version }})"
         fi
