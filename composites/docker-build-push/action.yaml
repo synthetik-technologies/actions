@@ -9,6 +9,10 @@ inputs:
     description: The targeted image registry
     required: false
     default: ""
+  load-local:
+    description: boolean string to load image locally for testing
+    required: false
+    default: "false"
   platforms:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
