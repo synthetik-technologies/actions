@@ -16,5 +16,9 @@ runs:
       shell: bash
       id: get-short-sha
       run: |
-        version=${{ github.event.pull_request.head.sha }}
-        echo "::set-output name=version::$(echo ${version::7})" #* shortens sha
+        if [ ${{ github.event_name }} == 'pull_request' ]; then
+           sha=${{ github.event.pull_request.head.sha }}
+        else
+           sha=${{ github.sha }}
+        fi
+        echo "::set-output name=version::$(echo ${sha::7})" #* shortens sha
