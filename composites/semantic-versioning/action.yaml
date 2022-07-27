@@ -33,6 +33,6 @@ runs:
       shell: bash
       run: |
         npx semantic-release
-        echo "outputs:version:${{ env.VERSION }}"
+        echo "::set-outputs name=version::${{ env.VERSION }}"
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
