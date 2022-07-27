@@ -9,7 +9,7 @@ inputs:
 outputs:
   version:
     description: The semantic version
-    value: ${{ steps.get-semantic-version.outputs.version }}
+    value: ${{ steps.create-release.outputs.version }}
 
 runs:
   using: composite
@@ -29,9 +29,10 @@ runs:
       run: npm install semantic-release @semantic-release/exec
 
     - name: Create Release
+      id: create-release
       shell: bash
       run: |
         npx semantic-release
-        echo "outputs:version: ${{ steps.get-semantic-version.outputs.version }}"
+        echo "outputs:version:${{ env.VERSION }}"
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
