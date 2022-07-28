@@ -27,7 +27,7 @@ jobs:
 
   docker-build-push:
     name: Docker Build and Push
-    runs-on: [self-hosted, docker, ARM64]
+    runs-on: [self-hosted, docker, bizon]
     needs: [versioning]
     steps:
       - name: Pull Submodules
