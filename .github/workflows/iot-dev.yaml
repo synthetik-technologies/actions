@@ -30,6 +30,11 @@ jobs:
     runs-on: [self-hosted, docker, ARM64]
     needs: [versioning]
     steps:
+      - name: Pull Submodules
+        uses: actions/checkout@v3
+        with:
+          path: .
+          submodules: recursive
       - name: Log Into Registries
         uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
         with:
