@@ -30,18 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [versioning]
     steps:
-      - name: Add Courier SSH Key
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: |
-            ${{ secrets.DEPLOY_TOKEN_FRANKENSTITCH }}
-            ${{ secrets.DEPLOY_KEY_BASLER_CAMERA_MODULE }}
       - name: Pull Submodules
         uses: actions/checkout@v3
         with:
           path: .
           submodules: recursive
-          ssh-key: ${{ env.SSH_AUTH_SOCK }}
+          token: ${{ secrets.PAT_JDH313 }}
       - name: Log Into Registries
         uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
         with:
