@@ -39,6 +39,7 @@ jobs:
         with:
           path: .
           submodules: recursive
+          ssh-key: ${{ env.SSH_AUTH_SOCK }}
       - name: Log Into Registries
         uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
         with:
