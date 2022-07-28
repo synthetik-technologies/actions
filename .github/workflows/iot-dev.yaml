@@ -30,6 +30,10 @@ jobs:
     runs-on: [self-hosted, docker, bizon]
     needs: [versioning]
     steps:
+      - name: Add Courier SSH Key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_TOKEN_FRANKENSTITCH }}
       - name: Pull Submodules
         uses: actions/checkout@v3
         with:
