@@ -27,7 +27,7 @@ jobs:
 
   docker-build-push:
     name: Docker Build and Push
-    runs-on: [self-hosted, docker, bizon]
+    runs-on: ubuntu-latest
     needs: [versioning]
     steps:
       - name: Add Courier SSH Key
