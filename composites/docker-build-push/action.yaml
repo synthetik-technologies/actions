@@ -42,3 +42,4 @@ runs:
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max
+        github_token: ${{ secrets.PAT_JDH313 }}
