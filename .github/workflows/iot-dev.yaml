@@ -33,13 +33,14 @@ jobs:
       - name: Add Courier SSH Key
         uses: webfactory/ssh-agent@v0.5.4
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_TOKEN_FRANKENSTITCH }}
+          ssh-private-key: |
+            ${{ secrets.DEPLOY_TOKEN_FRANKENSTITCH }}
+            ${{ secrets.DEPLOY_KEY_BASLER_CAMERA_MODULE }}
       - name: Pull Submodules
         uses: actions/checkout@v3
         with:
           path: .
-          # submodules: recursive
-          repository: "synthetik-technologies/frankenstitch"
+          submodules: recursive
           ssh-key: ${{ env.SSH_AUTH_SOCK }}
       - name: Log Into Registries
         uses: synthetik-technologies/actions/composites/iot-docker-login@2-separate-versioning-and-docker-building
