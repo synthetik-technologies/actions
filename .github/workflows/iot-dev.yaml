@@ -33,7 +33,6 @@ jobs:
       - name: Pull Submodules
         uses: actions/checkout@v3
         with:
-          path: .
           submodules: recursive
           token: ${{ secrets.PAT_JDH313 }}
       - name: Log Into Registries
