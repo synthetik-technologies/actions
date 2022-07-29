@@ -8,6 +8,9 @@ inputs:
   image-registry:
     description: The targeted image registry
     required: true
+  github-token:
+    description: The personal access token for the GitHub repository
+    required: true
   platforms:
     description: Platforms/architectures to build for. Defaults to AMD64
     required: false
@@ -42,4 +45,4 @@ runs:
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max
-        github_token: ${{ secrets.PAT_JDH313 }}
+        github-token: ${{ inputs.github-token }}
