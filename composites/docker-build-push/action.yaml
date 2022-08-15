@@ -41,6 +41,7 @@ runs:
       uses: docker/build-push-action@v2
       if: inputs.ssh-key-needed == 'true'
       with:
+        context: .
         ssh: default=${{ env.SSH_AUTH_SOCK }}
         push: true
         tags: ${{ steps.name-image.outputs.image-name }}
@@ -51,6 +52,7 @@ runs:
       uses: docker/build-push-action@v2
       if: inputs.ssh-key-needed == 'false'
       with:
+        context: .
         push: true
         tags: ${{ steps.name-image.outputs.image-name }}
         platforms: ${{ inputs.platforms }}
