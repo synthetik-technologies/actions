@@ -1,0 +1,36 @@
+name: Build Debian Package
+description: Build Debian packages
+author: Synthetik Technologies
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+      with:
+        path: blastfoam-src
+
+    - name: Build tar for Cache
+      shell: bash
+      working-directory: blastfoam-src
+      run: tar -czf checksum.tar.gz --mtime='UTC 2019-01-01' --group=0 --owner=0 --numeric-owner --sort=name Makefile applications debian etc src
+
+    - name: Check Cache
+      id: check-cache
+      uses: actions/cache@v3
+      with:
+        path: blastfoam_*.deb
+        key: ${{ hashFiles('blastfoam-src/checksum.tar.gz') }}
+
+    - name: Build from Makefile
+      shell: bash
+      if: ${{ steps.check-cache.outputs.cache-hit != 'true' }}
+      working-directory: blastoam-src
+      run: debuild --no-linitian -i -nc -us -uc -b --jobs=10
+
+    - name: Output Debian Package
+      uses: actions/upload-artifact@v3
+      with:
+        name: blastfoam-untested.deb
+        path: ${{ github.workspace }}/blastfoam_*.deb
+        retention-days: 7
