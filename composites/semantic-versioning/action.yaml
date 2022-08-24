@@ -6,6 +6,10 @@ inputs:
   github_token:
     description: GitHub token
     required: true
+  dry_run:
+    description: Do a dry run (no release/publish)
+    required: false
+    default: "false"
 outputs:
   version:
     description: The semantic version
@@ -31,7 +35,7 @@ runs:
     - name: Create Release
       shell: bash
       run: |
-        npx semantic-release
+        npx semantic-release --dry-run ${{ inputs.dry_run }}
         echo "outputs:version: ${{ steps.get-semantic-version.outputs.version }}"
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
