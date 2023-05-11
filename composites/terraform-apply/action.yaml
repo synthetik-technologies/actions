@@ -1,0 +1,38 @@
+name: Terraform Apply
+description: Intializes and applies a Terraform configuration
+author: Synthetik Technologies
+
+inputs:
+  tf_path:
+    description: Path to the Terraform configuration
+    required: true
+  variables:
+    description: Variables to pass to Terraform
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    - uses: actions/checkout@v3
+
+    - name: Terraform Init
+      shell: bash
+      run: terraform init
+      working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
+
+    - name: Terraform Apply
+      shell: bash
+      if: inputs.variables
+      run: terraform apply -auto-approve -input=false -var=${{ inputs.variables }}
+      working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
+
+    - name: Terraform Apply
+      shell: bash
+      if: ! inputs.variables
+      run: terraform apply -auto-approve -input=false
+      working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
