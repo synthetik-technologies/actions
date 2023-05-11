@@ -6,9 +6,12 @@ inputs:
   tf_path:
     description: Path to the Terraform configuration
     required: true
-  variables:
+  tf_vars:
     description: Variables to pass to Terraform
     required: false
+  tf_api_token:
+    description: Terraform API token
+    required: true
 
 runs:
   using: composite
@@ -16,7 +19,7 @@ runs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        cli_config_credentials_token: ${{ inputs.tf_api_token }}
 
     - uses: actions/checkout@v3
 
@@ -27,12 +30,12 @@ runs:
 
     - name: Terraform Apply
       shell: bash
-      if: inputs.variables
-      run: terraform apply -auto-approve -input=false -var=${{ inputs.variables }}
+      if: inputs.tf_vars
+      run: terraform apply -auto-approve -input=false -var=${{ inputs.tf_vars }}
       working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
 
     - name: Terraform Apply
       shell: bash
-      if: ! inputs.variables
+      if: ! inputs.tf_vars
       run: terraform apply -auto-approve -input=false
       working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
