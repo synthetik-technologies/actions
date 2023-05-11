@@ -9,6 +9,7 @@ inputs:
   tf_vars:
     description: Variables to pass to Terraform
     required: false
+    default: ""
   tf_api_token:
     description: Terraform API token
     required: true
@@ -30,12 +31,12 @@ runs:
 
     - name: Terraform Apply
       shell: bash
-      if: inputs.tf_vars
+      if: inputs.tf_vars != ''
       run: terraform apply -auto-approve -input=false -var=${{ inputs.tf_vars }}
       working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
 
     - name: Terraform Apply
       shell: bash
-      if: ! inputs.tf_vars
+      if: inputs.tf_vars == ''
       run: terraform apply -auto-approve -input=false
       working-directory: ${{ github.workspace }}/${{ inputs.tf_path }}
