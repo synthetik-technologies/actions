@@ -2,6 +2,10 @@ name: Build and Push Docker Image
 description: Build and (optionally) push Docker images
 author: Synthetik Technologies
 inputs:
+  file:
+    description: The path to the Dockerfile
+    required: false
+    default: Dockerfile
   image:
     description: The image base name
     required: true
@@ -51,19 +55,8 @@ runs:
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
-    - name: Build and Push with SSH
-      uses: docker/build-push-action@v2
-      if: inputs.ssh-key-needed == 'true'
-      with:
-        load: ${{ inputs.load-local }}
-        ssh: default=${{ env.SSH_AUTH_SOCK }}
-        push: ${{ inputs.push }}
-        tags: ${{ steps.name-image.outputs.image-name }}
-        platforms: ${{ inputs.platforms }}
-        cache-from: type=gha
-        cache-to: type=gha, mode=max
-    - name: Build and Push No SSH
-      uses: docker/build-push-action@v2
+    - name: Build and Push
+      uses: docker/build-push-action@v4
       if: inputs.ssh-key-needed == 'false'
       with:
         load: ${{ inputs.load-local }}
@@ -72,3 +65,4 @@ runs:
         platforms: ${{ inputs.platforms }}
         cache-from: type=gha
         cache-to: type=gha, mode=max
+        file: ${{ inputs.file }}
