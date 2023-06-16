@@ -13,7 +13,7 @@ inputs:
 outputs:
   version:
     description: The semantic version
-    value: ${{ steps.get-semantic-version.outputs.version }}
+    value: ${{ steps.create-release.outputs.version }}
 
 runs:
   using: composite
@@ -33,9 +33,10 @@ runs:
       run: npm install semantic-release semantic-release/exec semantic-release/git google/semantic-release-replace-plugin
 
     - name: Create Release
+      id: create-release
       shell: bash
       run: |
         npx semantic-release --dry-run ${{ inputs.dry_run }}
-        echo "outputs:version: ${{ steps.get-semantic-version.outputs.version }}"
+        echo "version=${{ env.RELEASE }}" >> "$GITHUB_OUTPUT"
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
