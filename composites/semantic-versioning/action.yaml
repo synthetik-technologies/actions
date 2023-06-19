@@ -6,10 +6,14 @@ inputs:
   github_token:
     description: GitHub token
     required: true
+  dry_run:
+    description: Do a dry run (no release/publish)
+    required: false
+    default: "false"
 outputs:
   version:
     description: The semantic version
-    value: ${{ steps.create-release.outputs.version }}
+    value: ${{ steps.create-release.outputs.RELEASE }}
 
 runs:
   using: composite
@@ -26,13 +30,12 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: npm install semantic-release @semantic-release/exec @semantic-release/git
+      run: npm install semantic-release semantic-release/exec semantic-release/git google/semantic-release-replace-plugin
 
     - name: Create Release
       id: create-release
       shell: bash
       run: |
-        npx semantic-release
-        echo "::set-output name=version::$(echo ${{ env.VERSION }})"
+        npx semantic-release --dry-run ${{ inputs.dry_run }}
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
