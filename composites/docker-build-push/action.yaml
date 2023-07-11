@@ -2,6 +2,10 @@ name: Build and Push Docker Image
 description: Build and (optionally) push Docker images
 author: Synthetik Technologies
 inputs:
+  context:
+    description: The build context
+    required: false
+    default: "{{defaultContext}}"
   file:
     description: The path to the Dockerfile
     required: false
@@ -59,6 +63,7 @@ runs:
       uses: docker/build-push-action@v4
       if: inputs.ssh-key-needed == 'false'
       with:
+        context: ${{ inputs.context }}
         load: ${{ inputs.load-local }}
         push: ${{ inputs.push }}
         tags: ${{ steps.name-image.outputs.image-name }}
